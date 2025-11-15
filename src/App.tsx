@@ -7,10 +7,12 @@ import { ProjectList } from "./components/ProjectList";
 import { CreateProjectModal } from "./components/CreateProjectModal";
 import { useState, useEffect } from "react";
 import { RegisterForm } from "./RegisterForm";
+import { ProfilePage } from "./ProfilePage";
 
 export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showProfilePage, setShowProfilePage] = useState(false);
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -92,11 +94,14 @@ export default function App() {
                     className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-20"
                     onMouseLeave={() => setShowProfileMenu(false)}
                   >
-                    <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-700">
-                      <p className="text-sm font-medium text-slate-900 dark:text-white">User Menu</p>
-                    </div>
-                    <button className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                      Profile Settings
+                    <button 
+                      className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                      onClick={() => {
+                        setShowProfilePage(true);
+                        setShowProfileMenu(false);
+                      }}
+                    >
+                      View Profile
                     </button>
                     <button className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                       Account Settings
@@ -114,6 +119,11 @@ export default function App() {
       <main className="max-w-6xl mx-auto px-4 py-8">
         <Content />
       </main>
+      
+      {/* Profile Page Modal */}
+      {showProfilePage && (
+        <ProfilePage onClose={() => setShowProfilePage(false)} />
+      )}
       
       <Toaster position="top-right" />
     </div>
