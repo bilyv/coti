@@ -38,12 +38,12 @@ export function CreateStepForm({ projectId, onCancel, onSuccess }: CreateStepFor
   };
 
   return (
-    <div className="bg-slate-50 rounded-xl p-6">
-      <h3 className="text-lg font-semibold text-slate-800 mb-4">Add New Step</h3>
+    <div className="bg-slate-50 rounded-xl p-6 dark:bg-slate-700/50">
+      <h3 className="text-lg font-semibold text-slate-800 mb-4 dark:text-slate-200">Add New Step</h3>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
+          <label className="block text-sm font-medium text-slate-700 mb-2 dark:text-slate-300">
             Step Title
           </label>
           <input
@@ -51,13 +51,13 @@ export function CreateStepForm({ projectId, onCancel, onSuccess }: CreateStepFor
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="What needs to be done?"
-            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-slate-800 dark:border-slate-600 dark:text-white dark:placeholder-slate-500"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
+          <label className="block text-sm font-medium text-slate-700 mb-2 dark:text-slate-300">
             Description (optional)
           </label>
           <textarea
@@ -65,7 +65,7 @@ export function CreateStepForm({ projectId, onCancel, onSuccess }: CreateStepFor
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Additional details about this step"
             rows={3}
-            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
+            className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none dark:bg-slate-800 dark:border-slate-600 dark:text-white dark:placeholder-slate-500"
           />
         </div>
 
@@ -73,7 +73,7 @@ export function CreateStepForm({ projectId, onCancel, onSuccess }: CreateStepFor
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 px-4 py-3 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors"
+            className="flex-1 px-4 py-3 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             Cancel
           </button>

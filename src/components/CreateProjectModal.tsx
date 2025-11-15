@@ -47,15 +47,15 @@ export function CreateProjectModal({ onClose }: CreateProjectModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 dark:bg-black/70">
+      <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto dark:bg-slate-800">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-slate-800">Create New Project</h2>
+          <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200">Create New Project</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors dark:hover:bg-slate-700"
           >
-            <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -63,7 +63,7 @@ export function CreateProjectModal({ onClose }: CreateProjectModalProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2 dark:text-slate-300">
               Project Name
             </label>
             <input
@@ -71,13 +71,13 @@ export function CreateProjectModal({ onClose }: CreateProjectModalProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter project name"
-              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-slate-800 dark:border-slate-600 dark:text-white dark:placeholder-slate-500"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2 dark:text-slate-300">
               Description (optional)
             </label>
             <textarea
@@ -85,12 +85,12 @@ export function CreateProjectModal({ onClose }: CreateProjectModalProps) {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Brief description of your project"
               rows={3}
-              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
+              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none dark:bg-slate-800 dark:border-slate-600 dark:text-white dark:placeholder-slate-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-3">
+            <label className="block text-sm font-medium text-slate-700 mb-3 dark:text-slate-300">
               Project Color
             </label>
             <div className="grid grid-cols-4 gap-3">
@@ -101,7 +101,7 @@ export function CreateProjectModal({ onClose }: CreateProjectModalProps) {
                   onClick={() => setSelectedColor(color)}
                   className={`w-12 h-12 rounded-xl transition-all ${
                     selectedColor === color
-                      ? "ring-2 ring-offset-2 ring-slate-400 scale-110"
+                      ? "ring-2 ring-offset-2 ring-slate-400 scale-110 dark:ring-slate-500 dark:ring-offset-slate-800"
                       : "hover:scale-105"
                   }`}
                   style={{ backgroundColor: color }}
@@ -114,7 +114,7 @@ export function CreateProjectModal({ onClose }: CreateProjectModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors"
+              className="flex-1 px-4 py-3 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
             >
               Cancel
             </button>
