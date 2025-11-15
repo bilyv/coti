@@ -6,18 +6,6 @@ import { v } from "convex/values";
 
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   providers: [Password, Anonymous],
-  callbacks: {
-    async signUp(args) {
-      const { provider, account, profile } = args;
-      if (provider === "password" && account?.id) {
-        // Update the user document with the name if provided
-        if (profile?.name) {
-          await args.ctx.db.patch(account.id, { name: profile.name });
-        }
-      }
-      return args;
-    },
-  },
 });
 
 export const loggedInUser = query({

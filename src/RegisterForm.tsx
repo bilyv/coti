@@ -4,17 +4,16 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
-import confetti from "canvas-confetti";
+import { ProcessingPage } from "./ProcessingPage";
 
 export function RegisterForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void }) {
   const { signIn } = useAuthActions();
   const updateUserProfile = useMutation(api.auth.updateUserProfile);
-  const [step, setStep] = useState(1); // 1: name, 2: email, 3: password, 4: success
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1); // 1: name, 2: email, 3: password, 4: processing
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   const handleNameSubmit = (e: React.FormEvent) => {
@@ -38,7 +37,7 @@ export function RegisterForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => voi
     }
   };
 
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
+  const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password.length < 8) {
       setError("Password must be at least 8 characters long");
@@ -49,46 +48,32 @@ export function RegisterForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => voi
       return;
     }
     
-    setSubmitting(true);
     setError("");
-    
-    try {
-      // First, sign up the user
-      await signIn("password", { 
-        flow: "signUp",
-        email,
-        password
-      });
-      
-      // Then, update the user's name
-      await updateUserProfile({ name });
-      
-      // Show success step
-      setStep(4);
-      
-      // Trigger confetti animation
-      confetti({
-        particleCount: 150,
-        spread: 90,
-        origin: { y: 0.6 },
-        colors: ['#4F46E5', '#7C3AED', '#2563EB', '#0EA5E9']
-      });
-    } catch (error: any) {
-      let toastTitle = "";
-      if (error.message?.includes("User already exists")) {
-        toastTitle = "An account with this email already exists. Please sign in instead.";
-      } else {
-        toastTitle = "Could not sign up. Please try again.";
-      }
-      setError(toastTitle);
-      setSubmitting(false);
-    }
+    setStep(4); // Go to processing page
   };
 
-  const handleGetStarted = () => {
+  const handleGetStarted = async () => {
+    // Update the user's name after successful authentication
+    try {
+      await updateUserProfile({ name });
+    } catch (err) {
+      console.error("Failed to update user profile:", err);
+    }
     // This will automatically redirect to the dashboard since the user is now authenticated
     window.location.reload();
   };
+
+  // Render processing page
+  if (step === 4) {
+    return (
+      <ProcessingPage 
+        name={name} 
+        email={email} 
+        password={password} 
+        onGetStarted={handleGetStarted} 
+      />
+    );
+  }
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -228,32 +213,11 @@ export function RegisterForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => voi
             
             <button
               type="submit"
-              disabled={submitting}
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md"
             >
-              {submitting ? "Creating Account..." : "Create Account"}
+              Create Account
             </button>
           </form>
-        )}
-
-        {step === 4 && (
-          <div className="text-center py-6">
-            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-slate-800 mb-2">Account Created!</h3>
-            <p className="text-slate-600 text-sm mb-6">
-              Welcome aboard, {name}! Your account has been successfully created.
-            </p>
-            <button
-              onClick={handleGetStarted}
-              className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
-            >
-              Get Started
-            </button>
-          </div>
         )}
 
         {step < 4 && (
