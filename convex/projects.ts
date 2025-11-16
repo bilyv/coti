@@ -87,6 +87,31 @@ export const create = mutation({
   },
 });
 
+export const update = mutation({
+  args: {
+    projectId: v.id("projects"),
+    name: v.optional(v.string()),
+    description: v.optional(v.string()),
+    color: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project || project.userId !== userId) {
+      throw new Error("Project not found or unauthorized");
+    }
+
+    const updatedFields: any = {};
+    if (args.name !== undefined) updatedFields.name = args.name;
+    if (args.description !== undefined) updatedFields.description = args.description;
+    if (args.color !== undefined) updatedFields.color = args.color;
+
+    return await ctx.db.patch(args.projectId, updatedFields);
+  },
+});
+
 export const remove = mutation({
   args: { projectId: v.id("projects") },
   handler: async (ctx, args) => {
