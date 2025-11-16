@@ -181,4 +181,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-For support, email support@coti-projects.com or open an issue in the repository.
+For support, email is ntwaribrian262@gmail.com or open an issue in the repository.
