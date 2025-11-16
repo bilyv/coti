@@ -233,6 +233,21 @@ export function ProjectDetails() {
               </button>
             </div>
           )}
+          
+          {/* Add Another Step Button */}
+          {steps && steps.length > 0 && !showCreateStep && (
+            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-dark-700">
+              <button
+                onClick={() => setShowCreateStep(true)}
+                className="w-full py-3 flex items-center justify-center gap-2 text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors rounded-lg border-2 border-dashed border-slate-300 hover:border-slate-400 dark:border-dark-600 dark:hover:border-dark-500"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+                Add Another Step
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
