@@ -172,13 +172,13 @@ export function CreateProjectTab() {
   };
 
   return (
-    <div className="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-slate-200 dark:border-dark-700 p-6 mb-6 md:mb-0">
-      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">Create New Project</h2>
+    <div className="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-slate-200 dark:border-dark-700 p-4 mb-4 md:mb-0">
+      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Create New Project</h2>
       
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Project Name */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5 dark:text-slate-300">
+          <label className="block text-sm font-medium text-slate-700 mb-1 dark:text-slate-300">
             Project Name *
           </label>
           <input
@@ -186,14 +186,14 @@ export function CreateProjectTab() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter project name"
-            className="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-dark-800 dark:border-dark-700 dark:text-white dark:placeholder-slate-500"
+            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-dark-800 dark:border-dark-700 dark:text-white dark:placeholder-slate-500"
             required
           />
         </div>
 
         {/* Project Color */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2 dark:text-slate-300">
+          <label className="block text-sm font-medium text-slate-700 mb-1 dark:text-slate-300">
             Color
           </label>
           <div className="flex gap-2">
@@ -216,13 +216,13 @@ export function CreateProjectTab() {
 
         {/* Project Description */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5 dark:text-slate-300">
+          <label className="block text-sm font-medium text-slate-700 mb-1 dark:text-slate-300">
             Project Description
           </label>
           <button
             type="button"
             onClick={() => setShowDescriptionModal(true)}
-            className="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-dark-800 dark:border-dark-700 dark:text-white dark:placeholder-slate-500 text-left hover:bg-slate-50 dark:hover:bg-dark-700"
+            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-dark-800 dark:border-dark-700 dark:text-white dark:placeholder-slate-500 text-left hover:bg-slate-50 dark:hover:bg-dark-700"
           >
             {descriptionContent ? (
               <div className="flex items-center gap-2">
@@ -244,7 +244,7 @@ export function CreateProjectTab() {
 
         {/* Project Link */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5 dark:text-slate-300">
+          <label className="block text-sm font-medium text-slate-700 mb-1 dark:text-slate-300">
             Project Link (optional)
           </label>
           <input
@@ -252,18 +252,18 @@ export function CreateProjectTab() {
             value={link}
             onChange={(e) => setLink(e.target.value)}
             placeholder="https://example.com"
-            className="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-dark-800 dark:border-dark-700 dark:text-white dark:placeholder-slate-500"
+            className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-dark-800 dark:border-dark-700 dark:text-white dark:placeholder-slate-500"
           />
         </div>
 
         {/* Steps Section */}
-        <div className="border-t border-slate-200 dark:border-dark-700 pt-6">
-          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Steps</h3>
+        <div className="border-t border-slate-200 dark:border-dark-700 pt-4">
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-3">Steps</h3>
           
-          <div className="space-y-4">
+          <div className="space-y-3">
             {steps.map((step, index) => (
-              <div key={index} className="border border-slate-200 dark:border-dark-700 rounded-lg p-4">
-                <div className="flex justify-between items-start mb-3">
+              <div key={index} className="border border-slate-200 dark:border-dark-700 rounded-lg p-3">
+                <div className="flex justify-between items-start mb-2">
                   <h4 className="font-medium text-slate-700 dark:text-slate-300">Step {index + 1}</h4>
                   {steps.length > 1 && (
                     <button
@@ -279,7 +279,7 @@ export function CreateProjectTab() {
                   )}
                 </div>
                 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div>
                     <label className="block text-xs font-medium text-slate-600 mb-1 dark:text-slate-400">
                       Step Title *
@@ -308,7 +308,7 @@ export function CreateProjectTab() {
                   </div>
                   
                   {/* Subtasks Section */}
-                  <div className="border-t border-slate-200 dark:border-dark-700 pt-3 mt-2">
+                  <div className="border-t border-slate-200 dark:border-dark-700 pt-2 mt-2">
                     <div className="flex justify-between items-center mb-2">
                       <h5 className="text-xs font-medium text-slate-600 dark:text-slate-400">Subtasks</h5>
                       <button
@@ -320,7 +320,7 @@ export function CreateProjectTab() {
                       </button>
                     </div>
                     
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       {step.subtasks.map((subtask, subtaskIndex) => (
                         <div key={subtaskIndex} className="flex items-center gap-2">
                           <input
@@ -351,11 +351,11 @@ export function CreateProjectTab() {
           </div>
           
           {/* Add Another Step Button */}
-          <div className="mt-8 pt-6 border-t border-slate-200 dark:border-dark-700">
+          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-dark-700">
             <button
               type="button"
               onClick={handleAddStep}
-              className="w-full py-3 flex items-center justify-center gap-2 text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors rounded-lg border-2 border-dashed border-slate-300 hover:border-slate-400 dark:border-dark-600 dark:hover:border-dark-500"
+              className="w-full py-2 flex items-center justify-center gap-2 text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors rounded-lg border-2 border-dashed border-slate-300 hover:border-slate-400 dark:border-dark-600 dark:hover:border-dark-500"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
@@ -366,11 +366,11 @@ export function CreateProjectTab() {
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-end pt-2">
           <button
             type="submit"
             disabled={!name.trim() || isSubmitting}
-            className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "Creating..." : "Create Project"}
           </button>
