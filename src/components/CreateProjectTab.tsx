@@ -35,11 +35,36 @@ export function CreateProjectTab() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const [descriptionContent, setDescriptionContent] = useState("");
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
 
   const createProject = useMutation(api.projects.create);
   const createStep = useMutation(api.steps.create);
   const createSubtask = useMutation(api.subtasks.create);
+
+  // Drag and drop handlers
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (targetIndex: number) => {
+    if (draggedIndex === null || draggedIndex === targetIndex) return;
+    
+    const newSteps = [...steps];
+    const draggedStep = newSteps[draggedIndex];
+    
+    // Remove the dragged item
+    newSteps.splice(draggedIndex, 1);
+    // Insert it at the new position
+    newSteps.splice(targetIndex, 0, draggedStep);
+    
+    setSteps(newSteps);
+    setDraggedIndex(null);
+  };
 
   const handleAddStep = () => {
     setSteps([...steps, { title: "", description: "", subtasks: [] }]);
@@ -262,9 +287,33 @@ export function CreateProjectTab() {
           
           <div className="space-y-3">
             {steps.map((step, index) => (
-              <div key={index} className="border border-slate-200 dark:border-dark-700 rounded-lg p-3">
+              <div 
+                key={index} 
+                className={`border border-slate-200 dark:border-dark-700 rounded-lg p-3 ${
+                  draggedIndex === index ? "bg-blue-50 dark:bg-blue-900/20" : ""
+                }`}
+                draggable
+                onDragStart={() => handleDragStart(index)}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(index)}
+              >
                 <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-medium text-slate-700 dark:text-slate-300">Step {index + 1}</h4>
+                  <div className="flex items-center gap-2">
+                    {/* Drag Handle */}
+                    <div 
+                      className="cursor-move p-1 rounded hover:bg-slate-100 dark:hover:bg-dark-700"
+                      draggable
+                      onDragStart={(e) => {
+                        e.stopPropagation();
+                        handleDragStart(index);
+                      }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                      </svg>
+                    </div>
+                    <h4 className="font-medium text-slate-700 dark:text-slate-300">Step {index + 1}</h4>
+                  </div>
                   {steps.length > 1 && (
                     <button
                       type="button"
