@@ -65,10 +65,13 @@ export function ProjectCard({ project }: ProjectCardProps) {
               {project.name}
             </h3>
             {project.description && (
-              <p className="text-slate-600 text-sm dark:text-slate-400" title={project.description}>
-                {truncateDescription(project.description, 100)}
-              </p>
+              <div 
+                className="text-slate-600 text-sm dark:text-slate-400"
+                title={project.description}
+                dangerouslySetInnerHTML={{ __html: truncateDescription(project.description, 100) }}
+              />
             )}
+
           </div>
           <button
             onClick={(e) => {

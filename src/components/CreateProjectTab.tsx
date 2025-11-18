@@ -175,7 +175,7 @@ export function CreateProjectTab() {
       // First create the project
       const projectId: Id<"projects"> = await createProject({
         name: name.trim(),
-        description: description.trim() || undefined,
+        description: description || undefined, // Remove trim() to preserve HTML
         link: link.trim() || undefined,
         color: selectedColor,
       });

@@ -113,9 +113,17 @@ export function ProjectDetails() {
 
     return (
       <div className="mt-2">
-        <p className="text-slate-600 dark:text-slate-400 whitespace-pre-wrap">
-          {shouldTruncate ? truncateDescription(project.description) : project.description}
-        </p>
+        {shouldTruncate ? (
+          <div 
+            className="text-slate-600 dark:text-slate-400 whitespace-pre-wrap"
+            dangerouslySetInnerHTML={{ __html: truncateDescription(project.description) }}
+          />
+        ) : (
+          <div 
+            className="text-slate-600 dark:text-slate-400 whitespace-pre-wrap"
+            dangerouslySetInnerHTML={{ __html: project.description }}
+          />
+        )}
         {isLongDescription && (
           <button
             onClick={() => setShowDescriptionModal(true)}
@@ -269,9 +277,10 @@ export function ProjectDetails() {
             <div className="flex-1 overflow-y-auto p-4">
               <div className="prose max-w-none dark:prose-invert">
                 <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">{project.name}</h2>
-                <div className="whitespace-pre-wrap text-slate-600 dark:text-slate-300">
-                  {project.description}
-                </div>
+                <div 
+                  className="text-slate-600 dark:text-slate-300 prose prose-slate dark:prose-invert max-w-none"
+                  dangerouslySetInnerHTML={{ __html: project.description || '' }}
+                />
               </div>
             </div>
             
