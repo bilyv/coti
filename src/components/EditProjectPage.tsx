@@ -48,6 +48,10 @@ export function EditProjectPage() {
   const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
 
+  // Note: In the current implementation, subtasks are only fully supported for new steps.
+  // For existing steps, subtasks are not fetched or updated. This is a simplified implementation
+  // focused on the core functionality of editing project details and steps.
+
   const project = useQuery(api.projects.get, projectId ? { projectId: projectId as Id<"projects"> } : "skip");
   const projectSteps = useQuery(api.steps.listByProject, projectId ? { projectId: projectId as Id<"projects"> } : "skip");
   const updateProject = useMutation(api.projects.update);
@@ -72,12 +76,12 @@ export function EditProjectPage() {
   // Load steps data when it's available
   useEffect(() => {
     if (projectSteps) {
-      // Create a copy of steps with subtasks placeholder
+      // Create a copy of steps with empty subtasks arrays
       const stepsWithSubtasks: Step[] = projectSteps.map((step) => ({
         _id: step._id,
         title: step.title,
         description: step.description || "",
-        subtasks: [], // Will be populated by individual subtask queries
+        subtasks: [], // Will be populated when user adds subtasks or we fetch them
         order: step.order,
         isCompleted: step.isCompleted,
         isUnlocked: step.isUnlocked
@@ -197,6 +201,13 @@ export function EditProjectPage() {
     handleSubtaskChange(stepIndex, subtaskIndex, value);
   };
 
+  // Handle subtask completion toggle
+  const handleToggleSubtask = (stepIndex: number, subtaskIndex: number) => {
+    const newSteps = [...steps];
+    newSteps[stepIndex].subtasks[subtaskIndex].isCompleted = !newSteps[stepIndex].subtasks[subtaskIndex].isCompleted;
+    setSteps(newSteps);
+  };
+
   // Rich text editor functions
   const formatText = (command: string, value: string = '') => {
     document.execCommand(command, false, value);
@@ -241,7 +252,7 @@ export function EditProjectPage() {
         color: selectedColor,
       });
 
-      // Then update/create steps
+      // Then update/create steps and their subtasks
       for (const [index, step] of steps.entries()) {
         if (step._id) {
           // Update existing step
@@ -250,6 +261,10 @@ export function EditProjectPage() {
             title: step.title.trim(),
             description: step.description.trim() || undefined,
           });
+          
+          // Note: In a full implementation, you would also handle subtask updates for existing steps
+          // This would require tracking which subtasks are new/modified/deleted
+          // For now, we only handle subtasks for new steps
         } else if (step.title.trim()) {
           // Create new step
           const stepId = await createStep({
@@ -634,7 +649,7 @@ export function EditProjectPage() {
                 title="Bullet List"
               >
                 <svg className="w-4 h-4 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
               
