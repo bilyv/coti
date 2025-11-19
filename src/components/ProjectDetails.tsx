@@ -121,6 +121,27 @@ export function ProjectDetails() {
     );
   };
 
+  // Render project link if it exists
+  const renderProjectLink = () => {
+    if (!project.link) return null;
+
+    return (
+      <div className="mt-4 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+        </svg>
+        <a 
+          href={project.link} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium break-all"
+        >
+          {project.link}
+        </a>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-dark-900 dark:to-dark-800 pb-20 md:pb-8">
       <div className="max-w-6xl mx-auto px-4 py-8">
@@ -153,6 +174,7 @@ export function ProjectDetails() {
             <div>
               <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-2">{project.name}</h1>
               {renderDescription()}
+              {renderProjectLink()}
             </div>
           </div>
 

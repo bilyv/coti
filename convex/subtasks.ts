@@ -158,3 +158,36 @@ export const update = mutation({
     return args.subtaskId;
   },
 });
+
+// New query to load all subtasks for multiple steps
+export const listBySteps = query({
+  args: { stepIds: v.array(v.id("steps")) },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
+
+    // Verify user owns all the steps' projects
+    const steps = await Promise.all(args.stepIds.map(stepId => ctx.db.get(stepId)));
+    
+    // Check if all steps exist and belong to the same user
+    for (const step of steps) {
+      if (!step) return [];
+      
+      const project = await ctx.db.get(step.projectId);
+      if (!project || project.userId !== userId) return [];
+    }
+
+    // Get all subtasks for all steps
+    const allSubtasks = [];
+    for (const stepId of args.stepIds) {
+      const subtasks = await ctx.db
+        .query("subtasks")
+        .withIndex("by_step", (q) => q.eq("stepId", stepId))
+        .collect();
+      
+      allSubtasks.push(...subtasks);
+    }
+
+    return allSubtasks;
+  },
+});

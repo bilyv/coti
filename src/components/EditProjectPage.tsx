@@ -48,12 +48,15 @@ export function EditProjectPage() {
   const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
 
-  // Note: In the current implementation, subtasks are only fully supported for new steps.
-  // For existing steps, subtasks are not fetched or updated. This is a simplified implementation
-  // focused on the core functionality of editing project details and steps.
-
   const project = useQuery(api.projects.get, projectId ? { projectId: projectId as Id<"projects"> } : "skip");
   const projectSteps = useQuery(api.steps.listByProject, projectId ? { projectId: projectId as Id<"projects"> } : "skip");
+  // Add a query to load all subtasks for all steps
+  const allSubtasks = useQuery(
+    api.subtasks.listBySteps, 
+    projectId && projectSteps && projectSteps.length > 0 
+      ? { stepIds: projectSteps.map(step => step._id) } 
+      : "skip"
+  );
   const updateProject = useMutation(api.projects.update);
   const createStep = useMutation(api.steps.create);
   const updateStep = useMutation(api.steps.update);
@@ -76,12 +79,12 @@ export function EditProjectPage() {
   // Load steps data when it's available
   useEffect(() => {
     if (projectSteps) {
-      // Create a copy of steps with empty subtasks arrays
+      // Create a copy of steps with subtasks placeholder
       const stepsWithSubtasks: Step[] = projectSteps.map((step) => ({
         _id: step._id,
         title: step.title,
         description: step.description || "",
-        subtasks: [], // Will be populated when user adds subtasks or we fetch them
+        subtasks: [], // Will be populated by individual subtask queries
         order: step.order,
         isCompleted: step.isCompleted,
         isUnlocked: step.isUnlocked
@@ -90,6 +93,42 @@ export function EditProjectPage() {
       setSteps(stepsWithSubtasks);
     }
   }, [projectSteps]);
+
+  // Load subtasks for all steps when they're available
+  useEffect(() => {
+    if (allSubtasks && projectSteps) {
+      // Group subtasks by stepId
+      const subtasksByStep: Record<string, Subtask[]> = {};
+      allSubtasks.forEach(subtask => {
+        if (!subtasksByStep[subtask.stepId]) {
+          subtasksByStep[subtask.stepId] = [];
+        }
+        subtasksByStep[subtask.stepId].push({
+          _id: subtask._id,
+          title: subtask.title,
+          isCompleted: subtask.isCompleted,
+          order: subtask.order
+        });
+      });
+
+      // Update steps with their subtasks
+      setSteps(prevSteps => {
+        const updatedSteps = [...prevSteps];
+        for (let i = 0; i < updatedSteps.length; i++) {
+          const step = updatedSteps[i];
+          if (step._id && subtasksByStep[step._id]) {
+            // Sort subtasks by order
+            const sortedSubtasks = subtasksByStep[step._id].sort((a, b) => a.order - b.order);
+            updatedSteps[i] = {
+              ...step,
+              subtasks: sortedSubtasks
+            };
+          }
+        }
+        return updatedSteps;
+      });
+    }
+  }, [allSubtasks, projectSteps]);
 
   // Drag and drop handlers
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
@@ -189,23 +228,151 @@ export function EditProjectPage() {
     setSteps(newSteps);
   };
 
-  const handleRemoveSubtask = (stepIndex: number, subtaskIndex: number) => {
+  const handleRemoveSubtask = async (stepIndex: number, subtaskIndex: number) => {
+    const subtask = steps[stepIndex].subtasks[subtaskIndex];
+    
+    // If this is an existing subtask with an ID, delete it from the database
+    if (subtask._id) {
+      try {
+        await removeSubtask({ subtaskId: subtask._id });
+      } catch (error) {
+        console.error("Error deleting subtask:", error);
+        toast.error("Failed to delete subtask");
+        return; // Don't remove from local state if deletion failed
+      }
+    }
+    
+    // Remove from local state
     const newSteps = [...steps];
     newSteps[stepIndex].subtasks.splice(subtaskIndex, 1);
     setSteps(newSteps);
   };
 
-  // Add automatic saving for subtasks
+  // Track which subtasks are being saved to prevent duplicate creations
+  const [savingSubtasks, setSavingSubtasks] = useState<Set<string>>(new Set());
+  // Track subtasks that need to be saved
+  const [pendingSubtasks, setPendingSubtasks] = useState<Record<string, { stepIndex: number; subtaskIndex: number; value: string }>>({});
+
+  // Add automatic saving for subtasks with debouncing
   const autoSaveSubtask = (stepIndex: number, subtaskIndex: number, value: string) => {
     // Update the subtask title in state
     handleSubtaskChange(stepIndex, subtaskIndex, value);
+    
+    // Create a unique key for this subtask
+    const subtaskKey = `${stepIndex}-${subtaskIndex}`;
+    
+    // If this is an existing subtask with a title, update it immediately
+    const subtask = steps[stepIndex].subtasks[subtaskIndex];
+    if (subtask._id && value.trim()) {
+      // Set as pending to save
+      setPendingSubtasks(prev => ({
+        ...prev,
+        [subtaskKey]: { stepIndex, subtaskIndex, value }
+      }));
+    }
+    // If this is a new subtask (no _id) and has a title, mark it as pending creation
+    else if (!subtask._id && value.trim() && steps[stepIndex]._id) {
+      setPendingSubtasks(prev => ({
+        ...prev,
+        [subtaskKey]: { stepIndex, subtaskIndex, value }
+      }));
+    }
+    // If the value is empty and it's a new subtask, remove it from pending
+    else if (!subtask._id && !value.trim()) {
+      setPendingSubtasks(prev => {
+        const newPending = { ...prev };
+        delete newPending[subtaskKey];
+        return newPending;
+      });
+    }
   };
 
-  // Handle subtask completion toggle
-  const handleToggleSubtask = (stepIndex: number, subtaskIndex: number) => {
-    const newSteps = [...steps];
-    newSteps[stepIndex].subtasks[subtaskIndex].isCompleted = !newSteps[stepIndex].subtasks[subtaskIndex].isCompleted;
-    setSteps(newSteps);
+  // Save pending subtasks with debouncing
+  useEffect(() => {
+    if (Object.keys(pendingSubtasks).length === 0) return;
+
+    const timer = setTimeout(async () => {
+      await savePendingSubtasks();
+    }, 500); // Debounce for 500ms
+
+    return () => clearTimeout(timer);
+  }, [pendingSubtasks, savingSubtasks, steps, createSubtask, updateSubtask]);
+
+  // Function to immediately save pending subtasks
+  const savePendingSubtasks = async () => {
+    for (const [subtaskKey, { stepIndex, subtaskIndex, value }] of Object.entries(pendingSubtasks)) {
+      // If already saving this subtask, skip
+      if (savingSubtasks.has(subtaskKey)) {
+        continue;
+      }
+      
+      const subtask = steps[stepIndex].subtasks[subtaskIndex];
+      if (subtask._id && value.trim()) {
+        try {
+          setSavingSubtasks(prev => new Set(prev).add(subtaskKey));
+          await updateSubtask({
+            subtaskId: subtask._id,
+            title: value.trim(),
+            isCompleted: subtask.isCompleted
+          });
+          setSavingSubtasks(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(subtaskKey);
+            return newSet;
+          });
+        } catch (error) {
+          console.error("Error updating subtask:", error);
+          toast.error("Failed to update subtask");
+          setSavingSubtasks(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(subtaskKey);
+            return newSet;
+          });
+        }
+      }
+      // If this is a new subtask (no _id) and has a title, create it
+      else if (!subtask._id && value.trim() && steps[stepIndex]._id) {
+        try {
+          setSavingSubtasks(prev => new Set(prev).add(subtaskKey));
+          const newSubtaskId = await createSubtask({
+            stepId: steps[stepIndex]._id!,
+            title: value.trim()
+          });
+          
+          // Update the subtask with the new ID
+          const newSteps = [...steps];
+          newSteps[stepIndex].subtasks[subtaskIndex] = {
+            ...subtask,
+            _id: newSubtaskId,
+            title: value.trim()
+          };
+          setSteps(newSteps);
+          setSavingSubtasks(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(subtaskKey);
+            return newSet;
+          });
+        } catch (error) {
+          console.error("Error creating subtask:", error);
+          toast.error("Failed to create subtask");
+          setSavingSubtasks(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(subtaskKey);
+            return newSet;
+          });
+        }
+      }
+    }
+    
+    // Clear pending subtasks after saving
+    setPendingSubtasks({});
+  };
+
+  // Function to save immediately when needed (e.g., when submitting the form)
+  const saveAllPendingSubtasks = async () => {
+    if (Object.keys(pendingSubtasks).length > 0) {
+      await savePendingSubtasks();
+    }
   };
 
   // Rich text editor functions
@@ -241,6 +408,9 @@ export function EditProjectPage() {
     e.preventDefault();
     if (!name.trim() || !projectId) return;
 
+    // Save all pending subtasks before submitting
+    await saveAllPendingSubtasks();
+
     setIsSubmitting(true);
     try {
       // First update the project
@@ -252,7 +422,7 @@ export function EditProjectPage() {
         color: selectedColor,
       });
 
-      // Then update/create steps and their subtasks
+      // Then update/create steps
       for (const [index, step] of steps.entries()) {
         if (step._id) {
           // Update existing step
@@ -261,10 +431,6 @@ export function EditProjectPage() {
             title: step.title.trim(),
             description: step.description.trim() || undefined,
           });
-          
-          // Note: In a full implementation, you would also handle subtask updates for existing steps
-          // This would require tracking which subtasks are new/modified/deleted
-          // For now, we only handle subtasks for new steps
         } else if (step.title.trim()) {
           // Create new step
           const stepId = await createStep({
@@ -502,20 +668,33 @@ export function EditProjectPage() {
                             type="text"
                             value={subtask.title}
                             onChange={(e) => autoSaveSubtask(index, subtaskIndex, e.target.value)}
+                            onBlur={() => {
+                              // Trigger immediate save when user leaves the field
+                              const subtaskKey = `${index}-${subtaskIndex}`;
+                              const pending = pendingSubtasks[subtaskKey];
+                              if (pending) {
+                                // Clear the pending subtask and trigger immediate save
+                                const timer = setTimeout(() => {
+                                  setPendingSubtasks(prev => {
+                                    const newPending = { ...prev };
+                                    delete newPending[subtaskKey];
+                                    return newPending;
+                                  });
+                                }, 0);
+                              }
+                            }}
                             placeholder="Enter subtask"
                             className="flex-1 px-2 py-1 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-dark-800 dark:border-dark-700 dark:text-white dark:placeholder-slate-500"
                           />
-                          {step.subtasks.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveSubtask(index, subtaskIndex)}
-                              className="text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            onClick={async () => await handleRemoveSubtask(index, subtaskIndex)}
+                            className="text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
                         </div>
                       ))}
                     </div>

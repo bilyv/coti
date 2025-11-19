@@ -175,7 +175,7 @@ export function CreateProjectTab() {
       // First create the project
       const projectId: Id<"projects"> = await createProject({
         name: name.trim(),
-        description: description || undefined, // Remove trim() to preserve HTML
+        description: description.trim() || undefined,
         link: link.trim() || undefined,
         color: selectedColor,
       });
@@ -412,17 +412,15 @@ export function CreateProjectTab() {
                             placeholder="Enter subtask"
                             className="flex-1 px-2 py-1 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:bg-dark-800 dark:border-dark-700 dark:text-white dark:placeholder-slate-500"
                           />
-                          {step.subtasks.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveSubtask(index, subtaskIndex)}
-                              className="text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveSubtask(index, subtaskIndex)}
+                            className="text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
                         </div>
                       ))}
                     </div>
