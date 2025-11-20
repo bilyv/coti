@@ -406,46 +406,195 @@ function Content() {
             )}
 
             {activeTab === 'account' && (
-              <div className="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-slate-200 dark:border-dark-700 p-6">
-                <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">Account Settings</h2>
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold">
-                      {loggedInUser?.name?.charAt(0) || loggedInUser?.email?.charAt(0).toUpperCase() || 'U'}
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Account Settings</h2>
+                
+                {/* Profile Card */}
+                <div className="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-slate-200 dark:border-dark-700 p-6">
+                  <div className="flex flex-col md:flex-row md:items-center gap-6">
+                    <div className="flex-shrink-0">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold mx-auto md:mx-0">
+                        {loggedInUser?.name?.charAt(0) || loggedInUser?.email?.charAt(0).toUpperCase() || 'U'}
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-800 dark:text-slate-200">{loggedInUser?.name || loggedInUser?.email?.split('@')[0]}</h3>
-                      <p className="text-slate-600 dark:text-slate-400 text-sm">{loggedInUser?.email}</p>
+                    <div className="flex-grow text-center md:text-left">
+                      <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-lg">{loggedInUser?.name || loggedInUser?.email?.split('@')[0]}</h3>
+                      <p className="text-slate-600 dark:text-slate-400">{loggedInUser?.email}</p>
+                      <div className="mt-2 flex flex-wrap justify-center md:justify-start gap-2">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                          Account Holder
+                        </span>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                          </svg>
+                          Verified
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex-shrink-0">
+                      <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all text-sm font-medium">
+                        Edit Profile
+                      </button>
                     </div>
                   </div>
-
-                  <div className="border-t border-slate-200 dark:border-dark-700 pt-6">
-                    <h4 className="font-medium text-slate-800 dark:text-slate-200 mb-4">Profile Information</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+                
+                {/* Profile Information */}
+                <div className="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-slate-200 dark:border-dark-700 p-6">
+                  <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-lg mb-4">Profile Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
+                      <input
+                        type="text"
+                        defaultValue={loggedInUser?.name || ''}
+                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
+                      <input
+                        type="email"
+                        defaultValue={loggedInUser?.email || ''}
+                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Username</label>
+                      <input
+                        type="text"
+                        defaultValue={loggedInUser?.email?.split('@')[0] || ''}
+                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Phone Number</label>
+                      <input
+                        type="tel"
+                        placeholder="+1 (555) 123-4567"
+                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Bio</label>
+                    <textarea
+                      rows={3}
+                      placeholder="Tell us about yourself..."
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    ></textarea>
+                  </div>
+                  <button className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all">
+                    Save Changes
+                  </button>
+                </div>
+                
+                {/* Security Settings */}
+                <div className="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-slate-200 dark:border-dark-700 p-6">
+                  <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-lg mb-4">Security</h3>
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50 dark:bg-dark-700 rounded-lg">
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name</label>
-                        <input
-                          type="text"
-                          defaultValue={loggedInUser?.name || ''}
-                          className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-                        />
+                        <h4 className="font-medium text-slate-800 dark:text-slate-200">Password</h4>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">Last changed 3 months ago</p>
                       </div>
+                      <button className="px-3 py-2 text-sm bg-white dark:bg-dark-600 border border-slate-300 dark:border-dark-600 rounded-lg hover:bg-slate-100 dark:hover:bg-dark-600 transition-colors text-slate-700 dark:text-slate-300">
+                        Change Password
+                      </button>
+                    </div>
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50 dark:bg-dark-700 rounded-lg">
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
-                        <input
-                          type="email"
-                          defaultValue={loggedInUser?.email || ''}
-                          className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
-                        />
+                        <h4 className="font-medium text-slate-800 dark:text-slate-200">Two-Factor Authentication</h4>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">Add an extra layer of security</p>
+                      </div>
+                      <button className="px-3 py-2 text-sm bg-white dark:bg-dark-600 border border-slate-300 dark:border-dark-600 rounded-lg hover:bg-slate-100 dark:hover:bg-dark-600 transition-colors text-slate-700 dark:text-slate-300">
+                        Enable 2FA
+                      </button>
+                    </div>
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50 dark:bg-dark-700 rounded-lg">
+                      <div>
+                        <h4 className="font-medium text-slate-800 dark:text-slate-200">Active Sessions</h4>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">Manage devices that are currently signed in</p>
+                      </div>
+                      <button className="px-3 py-2 text-sm bg-white dark:bg-dark-600 border border-slate-300 dark:border-dark-600 rounded-lg hover:bg-slate-100 dark:hover:bg-dark-600 transition-colors text-slate-700 dark:text-slate-300">
+                        View Sessions
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Preferences */}
+                <div className="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-slate-200 dark:border-dark-700 p-6">
+                  <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-lg mb-4">Preferences</h3>
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50 dark:bg-dark-700 rounded-lg">
+                      <div>
+                        <h4 className="font-medium text-slate-800 dark:text-slate-200">Theme</h4>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">Choose your preferred theme</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            document.documentElement.classList.remove('dark');
+                            localStorage.setItem('theme', 'light');
+                            setTheme('light');
+                          }}
+                          className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${theme === 'light' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-dark-600 border border-slate-300 dark:border-dark-600 text-slate-700 dark:text-slate-300'}`}
+                        >
+                          Light
+                        </button>
+                        <button
+                          onClick={() => {
+                            document.documentElement.classList.add('dark');
+                            localStorage.setItem('theme', 'dark');
+                            setTheme('dark');
+                          }}
+                          className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${theme === 'dark' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-dark-600 border border-slate-300 dark:border-dark-600 text-slate-700 dark:text-slate-300'}`}
+                        >
+                          Dark
+                        </button>
                       </div>
                     </div>
-                    <button className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all">
-                      Save Changes
-                    </button>
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-slate-50 dark:bg-dark-700 rounded-lg">
+                      <div>
+                        <h4 className="font-medium text-slate-800 dark:text-slate-200">Email Notifications</h4>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">Receive email updates about your projects</p>
+                      </div>
+                      <div className="relative inline-block w-10 mr-2 align-middle select-none">
+                        <input type="checkbox" id="notifications" className="sr-only" />
+                        <label htmlFor="notifications" className="block h-6 w-10 rounded-full bg-slate-300 dark:bg-slate-600 cursor-pointer">
+                          <span className="block h-4 w-4 mt-1 ml-1 rounded-full bg-white transform transition-transform duration-200 ease-in-out"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Danger Zone */}
+                <div className="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-red-200 dark:border-red-900/50 p-6">
+                  <h3 className="font-semibold text-red-600 dark:text-red-400 text-lg mb-4">Danger Zone</h3>
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                      <div>
+                        <h4 className="font-medium text-red-800 dark:text-red-200">Delete Account</h4>
+                        <p className="text-sm text-red-600 dark:text-red-400">Permanently delete your account and all data</p>
+                      </div>
+                      <button className="px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                        Delete Account
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
+
           </div>
         </div>
 
