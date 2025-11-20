@@ -155,26 +155,57 @@ export function NotesList({ projectId }: NotesListProps) {
               </div>
               
               {isEditing ? (
-                <div className="mt-2">
-                  <textarea
-                    value={editingContent}
-                    onChange={(e) => setEditingContent(e.target.value)}
-                    className="w-full p-3 border border-slate-300 dark:border-dark-600 rounded-lg bg-white dark:bg-dark-700 text-slate-900 dark:text-slate-100 resize-none"
-                    rows={4}
-                  />
-                  <div className="flex justify-end gap-2 mt-2">
-                    <button
-                      onClick={handleCancelEdit}
-                      className="px-3 py-1 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-dark-600 rounded-lg transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleSaveEdit}
-                      className="px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all"
-                    >
-                      Save
-                    </button>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                  <div className="bg-white dark:bg-dark-800 rounded-xl shadow-xl w-full max-w-2xl">
+                    <div className="p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Edit Note</h3>
+                        <button
+                          onClick={handleCancelEdit}
+                          className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                          Note Content
+                        </label>
+                        <textarea
+                          value={editingContent}
+                          onChange={(e) => setEditingContent(e.target.value)}
+                          className="w-full p-4 border border-slate-300 dark:border-dark-600 rounded-lg bg-white dark:bg-dark-700 text-slate-900 dark:text-slate-100 resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600"
+                          rows={8}
+                          placeholder="Write your note here..."
+                        />
+                        <div className="text-right text-sm text-slate-500 dark:text-slate-400 mt-1">
+                          {editingContent.length} characters
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end gap-3">
+                        <button
+                          onClick={handleCancelEdit}
+                          className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-dark-700 rounded-lg transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleSaveEdit}
+                          disabled={!editingContent.trim()}
+                          className={`px-4 py-2 rounded-lg transition-all ${
+                            !editingContent.trim()
+                              ? 'bg-slate-300 text-slate-500 cursor-not-allowed dark:bg-dark-600 dark:text-slate-400'
+                              : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700'
+                          }`}
+                        >
+                          Save Changes
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ) : (
