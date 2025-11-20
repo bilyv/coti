@@ -215,6 +215,31 @@ export const update = mutation({
 
     await ctx.db.patch(args.stepId, updatedFields);
 
+    // If order was updated, recalculate unlock status for all steps in the project
+    if (args.order !== undefined && args.order !== step.order) {
+      // Get all steps in the project
+      const allSteps = await ctx.db
+        .query("steps")
+        .withIndex("by_project", (q) => q.eq("projectId", step.projectId))
+        .collect();
+
+      // Sort steps by order
+      const sortedSteps = allSteps.sort((a, b) => a.order - b.order);
+
+      // Update unlock status for all steps
+      for (let i = 0; i < sortedSteps.length; i++) {
+        const currentStep = sortedSteps[i];
+        const shouldBeUnlocked = i === 0 || sortedSteps[i - 1].isCompleted;
+        
+        // Only update if the unlock status has changed
+        if (currentStep.isUnlocked !== shouldBeUnlocked) {
+          await ctx.db.patch(currentStep._id, {
+            isUnlocked: shouldBeUnlocked,
+          });
+        }
+      }
+    }
+
     return args.stepId;
   },
 });
