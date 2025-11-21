@@ -543,9 +543,8 @@ function Content() {
                           onClick={() => {
                             document.documentElement.classList.remove('dark');
                             localStorage.setItem('theme', 'light');
-                            setTheme('light');
                           }}
-                          className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${theme === 'light' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-dark-600 border border-slate-300 dark:border-dark-600 text-slate-700 dark:text-slate-300'}`}
+                          className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${!document.documentElement.classList.contains('dark') ? 'bg-blue-500 text-white' : 'bg-white dark:bg-dark-600 border border-slate-300 dark:border-dark-600 text-slate-700 dark:text-slate-300'}`}
                         >
                           Light
                         </button>
@@ -553,9 +552,8 @@ function Content() {
                           onClick={() => {
                             document.documentElement.classList.add('dark');
                             localStorage.setItem('theme', 'dark');
-                            setTheme('dark');
                           }}
-                          className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${theme === 'dark' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-dark-600 border border-slate-300 dark:border-dark-600 text-slate-700 dark:text-slate-300'}`}
+                          className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${document.documentElement.classList.contains('dark') ? 'bg-blue-500 text-white' : 'bg-white dark:bg-dark-600 border border-slate-300 dark:border-dark-600 text-slate-700 dark:text-slate-300'}`}
                         >
                           Dark
                         </button>
@@ -576,7 +574,7 @@ function Content() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Danger Zone */}
                 <div className="bg-white dark:bg-dark-800 rounded-xl shadow-sm border border-red-200 dark:border-red-900/50 p-6">
                   <h3 className="font-semibold text-red-600 dark:text-red-400 text-lg mb-4">Danger Zone</h3>
